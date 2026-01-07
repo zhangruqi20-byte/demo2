@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Walk Report</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+  }
+
+  .viewer {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+  }
+
+  .pages {
+    display: flex;
+    width: 700vw;
+    height: 100%;
+    transition: transform 0.4s ease;
+  }
+
+  .page {
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+  }
+
+  .page img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* 顶部页码 */
+  .indicator {
+    position: fixed;
+    top: 12px;
+    right: 14px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: #fff;
+    background: rgba(0,0,0,0.5);
+    border-radius: 12px;
+    z-index: 10;
+  }
+
+  /* 底部按钮 */
+  .controls {
+    position: fixed;
+    bottom: 16px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 10;
+  }
+
+  .controls button {
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 20px;
+    border: none;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+  }
+
+  .controls button:disabled {
+    opacity: 0.3;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="viewer" id="viewer">
+  <div class="pages" id="pages">
+
+    <div class="page"><img src="images/page1.jpg" /></div>
+    <div class="page"><img src="images/page2.jpg" /></div>
+    <div class="page"><img src="images/page3.jpg" /></div>
+    <div class="page"><img src="images/page4.jpg" /></div>
+    <div class="page"><img src="images/page5.jpg" /></div>
+    <div class="page"><img src="images/page6.jpg" /></div>
+    <div class="page"><img src="images/page7.jpg" /></div>
+
+  </div>
+</div>
+
+<div class="indicator" id="indicator">1 / 7</div>
+
+<div class="controls">
+  <button id="prev">上一页</button>
+  <button id="next">下一页</button>
+</div>
+
+<script>
+  const pages = document.getElementById("pages");
+  const indicator = document.getElementById("indicator");
+  const prevBtn = document.getElementById("prev");
+  const nextBtn = document.getElementById("next");
+
+  let index = 0;
+  const total = 7;
+
+  function update() {
+    pages.style.transform = `translateX(-${index * 100}vw)`;
+    indicator.textContent = `${index + 1} / ${total}`;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === total - 1;
+  }
+
+  prevBtn.onclick = () => {
+    if (index > 0) index--;
+    update();
+  };
+
+  nextBtn.onclick = () => {
+    if (index < total - 1) index++;
+    update();
+  };
+
+  /* 手势滑动 */
+  let startX = 0;
+
+  document.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+  });
+
+  document.addEventListener("touchend", e => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = endX - startX;
+
+    if (diff > 50 && index > 0) {
+      index--;
+    } else if (diff < -50 && index < total - 1) {
+      index++;
+    }
+    update();
+  });
+
+  update();
+</script>
+
+</body>
+</html>
